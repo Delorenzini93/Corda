@@ -17,6 +17,8 @@ scale_return = False
 active_fifth = None
 active_third = None
 active_seventh = None
+active_octave = None
+active_extended = None
 
 arpeggiator_thread = None
 arpeggiator_running = False
@@ -50,6 +52,10 @@ INTERVALS = {
     "minor_7th":  10,
     "major_6th":  9,
     "minor_6th":  8,
+    "octave": 12,
+    "ninth": 14,
+    "eleventh": 17,
+    "thirteenth": 21
 }
 
 SCALES = {
@@ -90,6 +96,8 @@ def print_status():
     if active_fifth:    harmony.append(active_fifth)
     if active_third:    harmony.append(active_third)
     if active_seventh:  harmony.append(active_seventh)
+    if active_octave:   harmony.append(active_octave)
+    if active_extended: harmony.append(active_extended)
     harmony_str = " + ".join(harmony) if harmony else "none"
 
     if mode == "chord":
@@ -141,7 +149,7 @@ def trigger_arpeggio(root_midi):
 def on_key(event):
     global octave, mode, waveform, amplitude
     global scale_type, scale_direction, scale_return
-    global active_fifth, active_third, active_seventh
+    global active_fifth, active_third, active_seventh, active_octave, active_extended
 
     key = event.name.lower()
 
@@ -229,6 +237,20 @@ def on_key(event):
             print(f"Seventh/Sixth: {active_seventh or 'OFF'}")
             return
 
+        octave_map = {"'": "octave"}
+        if key in octave_map:
+            chosen = octave_map[key]
+            active_octave = None if active_octave == chosen else chosen
+            print(f"Octave: {active_octave or 'OFF'}")
+            return
+
+        extended_map = {",": "ninth", ".": "eleventh", "-": "thirteenth"}
+        if key in extended_map:
+            chosen = extended_map[key]
+            active_extended = None if active_extended == chosen else chosen
+            print(f"Extended Harmony: {active_extended or 'OFF'}")
+            return
+
         if key in KEY_TO_MIDI:
             base_midi = KEY_TO_MIDI[key] + (octave - 4) * 12
             base_freq = get_freq(base_midi)
@@ -236,7 +258,7 @@ def on_key(event):
 
             played = [f"{base_freq:.2f} Hz (root)"]
 
-            for layer in [active_fifth, active_third, active_seventh]:
+            for layer in [active_fifth, active_third, active_seventh, active_octave, active_extended]:
                 if layer and layer in INTERVALS:
                     harmony_midi = base_midi + INTERVALS[layer]
                     harmony_freq = get_freq(harmony_midi)
@@ -258,6 +280,8 @@ print("[CHORD MODE]")
 print("  Fifths : 1 = 5th       | 2 = minor 5th")
 print("  Thirds : 3 = maj 3rd   | 4 = min 3rd  | 5 = sus2 | 6 = sus4")
 print("  7th/6th: 7 = maj 7th   | 8 = min 7th  | 9 = maj 6th | 0 = min 6th")
+print("  Octave : ' = Octave up")
+print("  ExtHarm: , = 9th       | . = 11th     | - = 13th")
 print()
 print("[SCALE MODE]")
 print("  Scales : 1=Ionian 2=Dorian 3=Phrygian 4=Lydian 5=Mixolydian")
