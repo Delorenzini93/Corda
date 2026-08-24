@@ -274,6 +274,12 @@ print("AMPLITUDE: B = up  |  N = down  |  M = reset")
 print()
 print("ESC = quit")
 print("=" * 55)
+
+bpm_input = input("BPM (press Enter for default 120): ").strip()
+BPM = int(bpm_input) if bpm_input.isdigit() else 120
+NOTE_DURATION = 60 / BPM
+print(f"BPM set to {BPM}")
+print()
 print_status()
 
 keyboard.on_press(on_key)
