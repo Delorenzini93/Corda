@@ -155,7 +155,6 @@ def on_key(event):
         print_status()
         return
 
-# Octave
     if key == "k":
         octave = max(0, octave - 1)
         print_status()
@@ -184,7 +183,6 @@ def on_key(event):
         print(f"Amplitude reset: {amplitude:.1f}")
         return
 
-# ── SCALE MODE
     if mode == "scale":
         if key in SCALE_KEYS:
             scale_type = SCALE_KEYS[key]
@@ -204,7 +202,6 @@ def on_key(event):
             trigger_arpeggio(base_midi)
         return
 
-# ── CHORD MODE
     if mode == "chord":
 
         if key in CYCLES:
@@ -247,7 +244,6 @@ def on_key(event):
 
             print(f"{key.upper()} → " + " | ".join(played))
 
-# ─── STARTUP ──────────────────────────────────────────────────────────────────
 print("=" * 55)
 print("         MUSICAL KEYBOARD — chord_harmony_settings")
 print("=" * 55)
